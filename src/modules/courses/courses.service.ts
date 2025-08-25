@@ -90,7 +90,7 @@ export class CoursesService {
 
   async uploadFile(file: Express.Multer.File): Promise<UploadApiResponse> {
     if (!file) {
-      throw new BadRequestException("No se envió ningún archivo");
+      return null;
     }
     console.log("📂 Archivo recibido:", {
       originalname: file.originalname,

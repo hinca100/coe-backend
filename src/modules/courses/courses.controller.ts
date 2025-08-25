@@ -83,43 +83,49 @@ export class CoursesController {
     if (file) {
       const uploadResult = await this.courses.uploadFile(file);
       dto.resourceUrl = uploadResult.secure_url;
+    } else {
+      dto.resourceUrl = null; // 👈 así no rompe validación
     }
     dto.order = Number(dto.order);
     return this.courses.addChapter(courseId, dto, user);
   }
 
   @UseGuards(JwtAuthGuard)
-@Post(':id/resources')
-@UseInterceptors(FileInterceptor('file'))
-async addResource(
-  @Param('id') courseId: string,
-  @Body('resourceType') resourceType: 'image' | 'pdf' | 'video' | 'link',
-  @Body('url') url: string,
-  @UploadedFile() file: Express.Multer.File,
-  @CurrentUser() user: any,
-) {
-  let finalUrl = url;
-  let finalType = resourceType;
+  @Post(':id/resources')
+  @UseInterceptors(FileInterceptor('file'))
+  async addResource(
+    @Param('id') courseId: string,
+    @Body('resourceType') resourceType: 'image' | 'pdf' | 'video' | 'link',
+    @Body('url') url: string,
+    @UploadedFile() file: Express.Multer.File,
+    @CurrentUser() user: any,
+  ) {
+    let finalUrl = url;
+    let finalType = resourceType;
 
-  if (file) {
-    const uploadResult = await this.courses.uploadFile(file);
-    finalUrl = uploadResult.secure_url;
+    if (file) {
+      const uploadResult = await this.courses.uploadFile(file);
+      finalUrl = uploadResult.secure_url;
 
-    // ⚡ Detectar tipo si no vino en el body
-    if (!finalType) {
-      if (file.mimetype.startsWith('image')) finalType = 'image';
-      else if (file.mimetype.startsWith('video')) finalType = 'video';
-      else if (file.mimetype.includes('pdf')) finalType = 'pdf';
-      else finalType = 'link'; // fallback
+      // ⚡ Detectar tipo si no vino en el body
+      if (!finalType) {
+        if (file.mimetype.startsWith('image')) finalType = 'image';
+        else if (file.mimetype.startsWith('video')) finalType = 'video';
+        else if (file.mimetype.includes('pdf')) finalType = 'pdf';
+        else finalType = 'link'; // fallback
+      }
     }
-  }
 
-  if (!finalType || !finalUrl) {
-    throw new BadRequestException('Falta resourceType o URL');
-  }
+    if (!finalType || !finalUrl) {
+      throw new BadRequestException('Falta resourceType o URL');
+    }
 
-  return this.courses.addResource(courseId, { resourceType: finalType, url: finalUrl }, user);
-}
+    return this.courses.addResource(
+      courseId,
+      { resourceType: finalType, url: finalUrl },
+      user,
+    );
+  }
 
   // 🚀 Subida suelta de archivos
   @UseGuards(JwtAuthGuard)
