@@ -29,23 +29,20 @@ export class CoursesController {
     return this.courses.findAll({ category, status });
   }
 
-  // ✅ Crear curso: si viene archivo, lo tratamos como portada (coverImage)
-  // y si viene "resources" como string JSON, lo parseamos.
+  // ✅ Crear curso: con portada opcional
   @UseGuards(JwtAuthGuard)
   @Post()
-  @UseInterceptors(FileInterceptor('file')) // el input <input name="file" />
+  @UseInterceptors(FileInterceptor('file'))
   async createCourse(
     @Body() dto: CreateCourseDto,
     @UploadedFile() file: Express.Multer.File,
     @CurrentUser() user: any,
   ) {
-    // Portada opcional
     if (file) {
       const uploadResult = await this.courses.uploadFile(file);
-      (dto as any).coverImage = uploadResult.secure_url; // 👈 portada del curso
+      (dto as any).coverImage = uploadResult.secure_url;
     }
 
-    // resources opcional (puede venir como string JSON desde form-data)
     if ((dto as any).resources && typeof (dto as any).resources === 'string') {
       try {
         (dto as any).resources = JSON.parse((dto as any).resources);
@@ -72,7 +69,7 @@ export class CoursesController {
     return this.courses.unpublishCourse(courseId, user);
   }
 
-  // ✅ Agregar capítulo (soporta archivo con Cloudinary)
+  // ✅ Agregar capítulo (con archivo opcional en Cloudinary)
   @UseGuards(JwtAuthGuard)
   @Post(':id/chapters')
   @UseInterceptors(FileInterceptor('file'))
@@ -90,7 +87,28 @@ export class CoursesController {
     return this.courses.addChapter(courseId, dto, user);
   }
 
-  // Endpoint utilitario por si quieres subir un archivo suelto
+  // ✅ Nuevo: Agregar recurso (imagen, pdf, video o link) al curso
+  @UseGuards(JwtAuthGuard)
+  @Post(':id/resources')
+  @UseInterceptors(FileInterceptor('file'))
+  async addResource(
+    @Param('id') courseId: string,
+    @Body('resourceType') resourceType: 'image' | 'pdf' | 'video' | 'link',
+    @Body('url') url: string,
+    @UploadedFile() file: Express.Multer.File,
+    @CurrentUser() user: any,
+  ) {
+    let finalUrl = url;
+
+    if (file) {
+      const uploadResult = await this.courses.uploadFile(file);
+      finalUrl = uploadResult.secure_url;
+    }
+
+    return this.courses.addResource(courseId, { resourceType, url: finalUrl }, user);
+  }
+
+  // 🚀 Subida suelta de archivos
   @UseGuards(JwtAuthGuard)
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
@@ -98,7 +116,7 @@ export class CoursesController {
     return this.courses.uploadFile(file);
   }
 
-  // Endpoint de prueba de Cloudinary
+  // 🚀 Test directo a Cloudinary
   @UseGuards(JwtAuthGuard)
   @Post('test-upload')
   @UseInterceptors(FileInterceptor('file'))

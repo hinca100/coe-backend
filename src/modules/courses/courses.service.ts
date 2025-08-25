@@ -143,4 +143,15 @@ export class CoursesService {
         .end(file.buffer);
     });
   }
+
+  async addResource(courseId: string, resource: { resourceType: string; url: string }, user: User) {
+    if (user.role !== 'admin' && user.role !== 'instructor') {
+      throw new ForbiddenException('Solo admin/instructor puede añadir recursos');
+    }
+    const course = await this.repo.findById(courseId);
+    if (!course) throw new NotFoundException('Curso no encontrado');
+    course.resources.push(resource as any);
+    await course.save();
+    return { message: '✅ Recurso agregado', resource };
+  }
 }
