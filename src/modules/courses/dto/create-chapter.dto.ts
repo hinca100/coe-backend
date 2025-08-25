@@ -1,20 +1,25 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty, IsString, IsNumber, IsOptional } from "class-validator";
+import { Type } from "class-transformer"; // 👈 para transformar strings a number
 
 export class CreateChapterDto {
-  @IsString()
   @IsNotEmpty()
+  @IsString()
   title: string;
 
-  @IsString()
   @IsOptional()
+  @IsString()
   description?: string;
 
+  @IsNotEmpty()
+  @Type(() => Number) // 👈 convierte automáticamente "1" → 1
   @IsNumber()
   order: number;
 
+  @IsNotEmpty()
   @IsString()
   resourceType: string;
 
+  @IsOptional()
   @IsString()
-  resourceUrl: string;
+  resourceUrl?: string;
 }

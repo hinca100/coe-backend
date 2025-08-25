@@ -2,6 +2,7 @@ import {
   Injectable,
   ForbiddenException,
   NotFoundException,
+  BadRequestException,
 } from '@nestjs/common';
 import { CoursesRepository } from './courses.repository';
 import { CreateCourseDto } from './dto/create-course.dto';
@@ -10,6 +11,11 @@ import { User, UserDocument } from '../users/schemas/user.schema';
 import { MailService } from '../mail/mail.service';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import {
+  v2 as cloudinary,
+  UploadApiResponse,
+  UploadApiErrorResponse,
+} from 'cloudinary';
 
 @Injectable()
 export class CoursesService {
@@ -30,10 +36,22 @@ export class CoursesService {
     return this.repo.findAll(filters);
   }
 
-  async addChapter(courseId: string, dto: CreateChapterDto, user: User) {
+  async addChapter(
+    courseId: string,
+    dto: CreateChapterDto,
+    user: User,
+    file?: Express.Multer.File,
+  ) {
     if (user.role !== 'admin' && user.role !== 'instructor') {
       throw new ForbiddenException('Only admin/instructor can add chapters');
     }
+
+    // 👇 Subir archivo si viene
+    if (file) {
+      const uploaded = await this.uploadFile(file);
+      dto.resourceUrl = uploaded.secure_url; // Guardamos la URL de Cloudinary
+    }
+
     return this.repo.addChapter(courseId, dto);
   }
 
@@ -46,7 +64,7 @@ export class CoursesService {
 
     const updated = await this.repo.publishCourse(courseId);
 
-    // ✅ ahora sí existe this.userModel
+    // ✅ Notificar por email
     const users = await this.userModel.find({}, 'email').exec();
     const recipients = users.map((u) => u.email);
 
@@ -68,5 +86,61 @@ export class CoursesService {
     course.status = 'draft';
     await course.save();
     return { message: 'Curso despublicado con éxito', course };
+  }
+
+  async uploadFile(file: Express.Multer.File): Promise<UploadApiResponse> {
+    if (!file) {
+      throw new BadRequestException("No se envió ningún archivo");
+    }
+    console.log("📂 Archivo recibido:", {
+      originalname: file.originalname,
+      mimetype: file.mimetype,
+      size: file.size,
+    });
+    let resourceType: "raw" | "image" | "video" = "raw";
+    if (file.mimetype.startsWith("image")) {
+      resourceType = "image";
+    } else if (file.mimetype.startsWith("video")) {
+      resourceType = "video";
+    } else if (file.mimetype.includes("pdf") || file.mimetype.includes("zip")) {
+      resourceType = "raw";
+    }
+    console.log("➡️ resourceType elegido:", resourceType);
+    return new Promise((resolve, reject) => {
+      cloudinary.uploader
+        .upload_stream(
+          {
+            resource_type: resourceType,
+            folder: "courses",
+          },
+          (error, result) => {
+            if (error) return reject(error);
+            resolve(result);
+          },
+        )
+        .end(file.buffer);
+    });
+  }
+
+
+  async testCloudinaryUpload(file: Express.Multer.File) {
+    if (!file) {
+      throw new BadRequestException("No se envió archivo");
+    }
+  
+    return new Promise((resolve, reject) => {
+      cloudinary.uploader
+        .upload_stream(
+          {
+            resource_type: "auto",
+            folder: "test-uploads",
+          },
+          (error, result) => {
+            if (error) return reject(error);
+            resolve(result);
+          },
+        )
+        .end(file.buffer);
+    });
   }
 }

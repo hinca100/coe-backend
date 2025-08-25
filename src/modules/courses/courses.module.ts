@@ -7,6 +7,7 @@ import { MailModule } from '../mail/mail.module';
 import { User, UserSchema } from '../users/schemas/user.schema'; // 👈 importar user
 import { Course, CourseSchema } from './schemas/course.schema';
 import { Chapter, ChapterSchema } from './schemas/chapter.schema'; // 👈 ahora sí correcto
+import { CloudinaryProvider } from 'src/common/cloudinary/cloudinary.provider';
 
 @Module({
   imports: [
@@ -17,8 +18,8 @@ import { Chapter, ChapterSchema } from './schemas/chapter.schema'; // 👈 ahora
     ]),
     MailModule,
   ],
-  providers: [CoursesService, CoursesRepository],
+  providers: [CoursesService, CoursesRepository, CloudinaryProvider],
   controllers: [CoursesController],
-  exports: [CoursesService, CoursesRepository],
+  exports: [CoursesService, CoursesRepository, CloudinaryProvider],
 })
 export class CoursesModule {}

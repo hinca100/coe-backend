@@ -1,4 +1,15 @@
-import { Body, Controller, Get, Param, Post, UseGuards, Patch } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  UseGuards,
+  Patch,
+  UploadedFile,
+  UseInterceptors
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { CoursesService } from './courses.service';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { CreateChapterDto } from './dto/create-chapter.dto';
@@ -31,18 +42,47 @@ export class CoursesController {
   }
 
   @UseGuards(JwtAuthGuard)
-@Patch(':id/unpublish')
-async unpublishCourse(@Param('id') courseId: string, @CurrentUser() user: any) {
-  return this.courses.unpublishCourse(courseId, user);
-}
+  @Patch(':id/unpublish')
+  async unpublishCourse(@Param('id') courseId: string, @CurrentUser() user: any) {
+    return this.courses.unpublishCourse(courseId, user);
+  }
 
   @UseGuards(JwtAuthGuard)
-  @Post(':id/chapters')
-  async addChapter(
-    @Param('id') courseId: string,
-    @Body() dto: CreateChapterDto,
-    @CurrentUser() user: any,
-  ) {
-    return this.courses.addChapter(courseId, dto, user);
+@Post(':id/chapters')
+@UseInterceptors(FileInterceptor('file')) 
+async addChapter(
+  @Param('id') courseId: string,
+  @Body() dto: CreateChapterDto,
+  @UploadedFile() file: Express.Multer.File, 
+  @CurrentUser() user: any,
+) {
+  // Si llega archivo lo subimos a Cloudinary
+  if (file) {
+    const uploadResult = await this.courses.uploadFile(file);
+    dto.resourceUrl = uploadResult.secure_url; 
   }
+  dto.order = Number(dto.order);
+  return this.courses.addChapter(courseId, dto, user);
+}
+
+ 
+  @UseGuards(JwtAuthGuard)
+  @Post('upload')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadFile(@UploadedFile() file: Express.Multer.File) {
+    return this.courses.uploadFile(file);
+  }
+
+
+
+
+  
+  @UseGuards(JwtAuthGuard)
+  @Post("test-upload")
+  @UseInterceptors(FileInterceptor("file"))
+  async testUpload(@UploadedFile() file: Express.Multer.File) {
+    return this.courses.testCloudinaryUpload(file);
+  }
+
+
 }
