@@ -30,6 +30,11 @@ export class CoursesController {
     return this.courses.publishCourse(courseId, user);
   }
 
+  @UseGuards(JwtAuthGuard)
+@Patch(':id/unpublish')
+async unpublishCourse(@Param('id') courseId: string, @CurrentUser() user: any) {
+  return this.courses.unpublishCourse(courseId, user);
+}
 
   @UseGuards(JwtAuthGuard)
   @Post(':id/chapters')

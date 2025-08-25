@@ -1,4 +1,8 @@
-import { Injectable, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  ForbiddenException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CoursesRepository } from './courses.repository';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { CreateChapterDto } from './dto/create-chapter.dto';
@@ -35,19 +39,34 @@ export class CoursesService {
 
   async publishCourse(courseId: string, user: any) {
     if (user.role !== 'admin' && user.role !== 'instructor') {
-      throw new ForbiddenException('Only admin or instructor can publish courses');
+      throw new ForbiddenException(
+        'Only admin or instructor can publish courses',
+      );
     }
 
     const updated = await this.repo.publishCourse(courseId);
 
     // ✅ ahora sí existe this.userModel
     const users = await this.userModel.find({}, 'email').exec();
-    const recipients = users.map(u => u.email);
+    const recipients = users.map((u) => u.email);
 
     if (recipients.length > 0) {
       await this.mailService.sendCoursePublished(updated, recipients);
     }
 
     return updated;
+  }
+
+  async unpublishCourse(courseId: string, user: any) {
+    if (user.role !== 'admin') {
+      throw new ForbiddenException('No autorizado para despublicar este curso');
+    }
+    const course = await this.repo.findById(courseId);
+    if (!course) {
+      throw new NotFoundException('Curso no encontrado');
+    }
+    course.status = 'draft';
+    await course.save();
+    return { message: 'Curso despublicado con éxito', course };
   }
 }
