@@ -161,4 +161,8 @@ export class CoursesService {
     }
     return this.repo.deleteCourse(courseId);
   }
+
+  async findById(id: string) {
+    return this.repo.findById(id);
+  }
 }

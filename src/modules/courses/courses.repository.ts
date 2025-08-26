@@ -49,8 +49,11 @@ export class CoursesRepository {
       .populate('chapters');
   }
 
-  async findById(courseId: string) {
-    return this.courseModel.findById(courseId).populate('chapters').exec();
+  async findById(id: string) {
+    return this.courseModel
+      .findById(id)
+      .populate('chapters') 
+      .exec();
   }
 
   async deleteCourse(courseId: string) {

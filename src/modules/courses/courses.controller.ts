@@ -11,6 +11,7 @@ import {
   Query,
   BadRequestException,
   Delete,
+  NotFoundException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CoursesService } from './courses.service';
@@ -145,8 +146,16 @@ export class CoursesController {
   }
 
   @UseGuards(JwtAuthGuard)
-@Delete(':id')
-async deleteCourse(@Param('id') courseId: string, @CurrentUser() user: any) {
-  return this.courses.deleteCourse(courseId, user);
-}
+  @Delete(':id')
+  async deleteCourse(@Param('id') courseId: string, @CurrentUser() user: any) {
+    return this.courses.deleteCourse(courseId, user);
+  }
+  @Get(':id')
+  async findOne(@Param('id') id: string) {
+    const course = await this.courses.findById(id);
+    if (!course) {
+      throw new NotFoundException(`Curso con id ${id} no encontrado`);
+    }
+    return course;
+  }
 }

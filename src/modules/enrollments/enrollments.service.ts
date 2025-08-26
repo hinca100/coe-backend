@@ -20,7 +20,7 @@ export class EnrollmentsService {
   async findByUser(userId: string) {
     return this.enrollmentModel
       .find({ userId })
-      .populate('courseId') // 👈 importante
+      .populate('courseId') 
       .exec()
   }
 }
