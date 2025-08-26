@@ -1,13 +1,18 @@
-// src/modules/courses/dto/create-course.dto.ts
-import { IsNotEmpty, IsOptional, IsString, ValidateNested, IsArray } from 'class-validator';
-import { Type } from 'class-transformer';
+import {
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  ValidateNested,
+  IsArray,
+} from "class-validator";
+import { Type } from "class-transformer";
 
 class CourseResourceDto {
   @IsString()
-  resourceType: 'image' | 'pdf' | 'video' | 'link';
+  resourceType: "image" | "pdf" | "video" | "link";
 
   @IsString()
-  url: string;
+  url: string; // 👈 siempre URL que ya subiste a Cloudinary
 }
 
 export class CreateCourseDto {
@@ -24,11 +29,11 @@ export class CreateCourseDto {
 
   @IsOptional()
   @IsString()
-  coverImage?: string; // 👈 portada
+  coverImage?: string;
 
   @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CourseResourceDto)
-  resources?: CourseResourceDto[]; // 👈 recursos iniciales
+  resources?: CourseResourceDto[];
 }

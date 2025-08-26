@@ -11,15 +11,15 @@ export class CreateChapterDto {
   description?: string;
 
   @IsNotEmpty()
-  @Type(() => Number)   // 👈 transforma "1" en 1
+  @Type(() => Number) 
   @IsNumber()
   order: number;
 
   @IsNotEmpty()
   @IsString()
-  resourceType: string;
+  resourceType: "image" | "pdf" | "video" | "link";
 
-  @IsOptional()         // 👈 no es obligatorio
+  @IsOptional()
   @IsString()
   resourceUrl?: string;
 }
