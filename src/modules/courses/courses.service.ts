@@ -30,7 +30,11 @@ export class CoursesService {
     return this.repo.findAll(filters);
   }
 
-  async addChapter(courseId: string, dto: CreateChapterDto, user: User) {
+  async addChapter(
+    courseId: string,
+    dto: CreateChapterDto,
+    user: User,
+  ) {
     if (user.role !== 'admin' && user.role !== 'instructor') {
       throw new ForbiddenException('Only admin/instructor can add chapters');
     }
@@ -70,11 +74,7 @@ export class CoursesService {
     return { message: 'Curso despublicado con éxito', course };
   }
 
-  async addResource(
-    courseId: string,
-    resource: { resourceType: string; url: string },
-    user: User,
-  ) {
+  async addResource(courseId: string, resource: { resourceType: string; url: string }, user: User) {
     if (user.role !== 'admin' && user.role !== 'instructor') {
       throw new ForbiddenException('Solo admin/instructor puede añadir recursos');
     }

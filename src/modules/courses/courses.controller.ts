@@ -7,6 +7,7 @@ import {
   UseGuards,
   Patch,
   Query,
+  BadRequestException,
   Delete,
   NotFoundException,
 } from '@nestjs/common';
@@ -28,10 +29,13 @@ export class CoursesController {
     return this.courses.findAll({ category, status });
   }
 
-  // ✅ Crear curso (ahora solo recibe JSON con coverImage URL opcional)
+  // ✅ Crear curso (con portada en URL)
   @UseGuards(JwtAuthGuard)
   @Post()
-  async createCourse(@Body() dto: CreateCourseDto, @CurrentUser() user: any) {
+  async createCourse(
+    @Body() dto: CreateCourseDto,
+    @CurrentUser() user: any,
+  ) {
     return this.courses.createCourse(dto, user);
   }
 
@@ -50,7 +54,7 @@ export class CoursesController {
     return this.courses.unpublishCourse(courseId, user);
   }
 
-  // ✅ Agregar capítulo (ahora solo URL, no archivo)
+  // ✅ Agregar capítulo (recibe JSON con resourceUrl)
   @UseGuards(JwtAuthGuard)
   @Post(':id/chapters')
   async addChapter(
@@ -62,7 +66,7 @@ export class CoursesController {
     return this.courses.addChapter(courseId, dto, user);
   }
 
-  // ✅ Agregar recurso (directo con resourceType + url)
+  // ✅ Agregar recurso (recibe JSON con resourceUrl)
   @UseGuards(JwtAuthGuard)
   @Post(':id/resources')
   async addResource(
@@ -71,7 +75,15 @@ export class CoursesController {
     @Body('url') url: string,
     @CurrentUser() user: any,
   ) {
-    return this.courses.addResource(courseId, { resourceType, url }, user);
+    if (!resourceType || !url) {
+      throw new BadRequestException('Falta resourceType o URL');
+    }
+
+    return this.courses.addResource(
+      courseId,
+      { resourceType, url },
+      user,
+    );
   }
 
   @UseGuards(JwtAuthGuard)
