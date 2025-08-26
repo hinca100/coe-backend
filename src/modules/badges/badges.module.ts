@@ -7,13 +7,15 @@ import { BadgesRepository } from './badges.repository';
 import { ProgressModule } from '../../modules/progress/dto/progress.module';
 import { CoursesModule } from '../courses/courses.module';
 import { MailModule } from '../mail/mail.module';
+import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Badge.name, schema: BadgeSchema }]),
     forwardRef(() => ProgressModule),
     CoursesModule,
-    MailModule
+    MailModule,
+    UsersModule
   ],
   controllers: [BadgesController],
   providers: [BadgesService, BadgesRepository],
