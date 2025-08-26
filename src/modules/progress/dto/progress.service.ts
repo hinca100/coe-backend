@@ -1,22 +1,29 @@
-import { Injectable, Inject, forwardRef } from '@nestjs/common';
-import { ProgressRepository } from './progress.repository';
-import { BadgesService } from '../../badges/badges.service';
+import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model, Types } from 'mongoose';
+import { Progress, ProgressDocument } from '../schemas/progress.schema';
 
 @Injectable()
 export class ProgressService {
   constructor(
-    private readonly repo: ProgressRepository,
-    @Inject(forwardRef(() => BadgesService))
-    private readonly badgesService: BadgesService,
+    @InjectModel(Progress.name) private progressModel: Model<ProgressDocument>,
   ) {}
 
-  async completeChapter(userId: string, courseId: string, chapterId: string) {
-    const progress = await this.repo.markCompleted(userId, courseId, chapterId);
-    await this.badgesService.checkAndAwardBadge(userId, courseId);
-    return progress;
+  async markChapter(userId: string, courseId: string, chapterId: string) {
+    return this.progressModel.findOneAndUpdate(
+      { userId, courseId, chapterId },
+      { completed: true, completedAt: new Date() },
+      { upsert: true, new: true }
+    );
   }
 
-  async getProgress(userId: string) {
-    return this.repo.getUserProgress(userId);
+  async getCourseProgress(userId: string, courseId: string) {
+    const all = await this.progressModel.find({ userId, courseId, completed: true });
+    return all;
   }
+
+  async countCompleted(userId: string, courseId: string) {
+    return this.progressModel.countDocuments({ userId, courseId, completed: true });
+  }
+  
 }

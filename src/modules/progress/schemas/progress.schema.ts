@@ -1,12 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Types } from 'mongoose';
-
-export type ProgressDocument = HydratedDocument<Progress>;
+import { Document, Types } from 'mongoose';
 
 @Schema({ timestamps: true })
 export class Progress {
-  _id: string;
-
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   userId: Types.ObjectId;
 
@@ -16,8 +12,12 @@ export class Progress {
   @Prop({ type: Types.ObjectId, ref: 'Chapter', required: true })
   chapterId: Types.ObjectId;
 
-  @Prop({ default: Date.now })
-  completedAt: Date;
+  @Prop({ default: false })
+  completed: boolean;
+
+  @Prop({ type: Date })
+  completedAt?: Date;
 }
 
+export type ProgressDocument = Progress & Document;
 export const ProgressSchema = SchemaFactory.createForClass(Progress);

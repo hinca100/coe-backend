@@ -7,22 +7,28 @@ export class MailService {
 
   async sendCoursePublished(course: any, recipients: string[]) {
     for (const email of recipients) {
-      try {
-        await this.mailerService.sendMail({
-          to: email,
-          subject: `Nuevo curso publicado: ${course.title}`,
-          html: `
-            <h2>${course.title} ya está disponible 🎉</h2>
-            <p>${course.description}</p>
-            <p><b>Categoría:</b> ${course.category}</p>
-          `,
-        });
-        console.log(`✅ Correo enviado a: ${email}`);
-      } catch (err) {
-        console.error('❌ Error enviando correo:', err.message || err);
-        throw err;
-      }
+      await this.mailerService.sendMail({
+        to: email,
+        subject: `Nuevo curso publicado: ${course.title}`,
+        html: `
+          <h2>${course.title} ya está disponible 🎉</h2>
+          <p>${course.description}</p>
+          <p><b>Categoría:</b> ${course.category}</p>
+        `,
+      });
     }
-    return { message: 'Correos enviados 🚀' };
+  }
+
+  async sendBadgeAwarded(email: string, courseTitle: string, badgeName: string) {
+    await this.mailerService.sendMail({
+      to: email,
+      subject: `🏅 ¡Has ganado una nueva insignia!`,
+      html: `
+        <h2>¡Felicidades!</h2>
+        <p>Completaste el curso <b>${courseTitle}</b>.</p>
+        <p>Has ganado la insignia: <b>${badgeName}</b> 🏅</p>
+        <p>Sigue aprendiendo 🚀</p>
+      `,
+    });
   }
 }

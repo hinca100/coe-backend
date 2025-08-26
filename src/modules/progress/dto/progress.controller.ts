@@ -1,25 +1,27 @@
-import { Controller, Post, Get, Param, UseGuards } from '@nestjs/common';
+import { Controller, Post, Get, Param, UseGuards, Body } from '@nestjs/common';
 import { ProgressService } from './progress.service';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../../../common/decorators/user.decorator';
 
 @Controller('progress')
+@UseGuards(JwtAuthGuard)
 export class ProgressController {
-  constructor(private readonly progress: ProgressService) {}
+  constructor(private readonly progressService: ProgressService) {}
 
-  @UseGuards(JwtAuthGuard)
-  @Post(':courseId/chapters/:chapterId/complete')
-  async completeChapter(
-    @Param('courseId') courseId: string,
-    @Param('chapterId') chapterId: string,
+  @Post('mark')
+  async markChapter(
     @CurrentUser() user: any,
+    @Body() body: { courseId: string; chapterId: string }
   ) {
-    return this.progress.completeChapter(user.sub, courseId, chapterId);
+    return this.progressService.markChapter(user._id, body.courseId, body.chapterId);
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Get()
-  async getMyProgress(@CurrentUser() user: any) {
-    return this.progress.getProgress(user.sub);
+  @Get(':courseId')
+  async getProgress(
+    @CurrentUser() user: any,
+    @Param('courseId') courseId: string
+  ) {
+    const completed = await this.progressService.countCompleted(user._id, courseId);
+    return { completed };
   }
 }
