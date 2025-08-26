@@ -29,14 +29,14 @@ export class BadgesService {
 
     const existing = await this.badgesRepo.findByUserAndCourse(userId, courseId);
     if (existing) return existing;
-
+    console.log("🏅 Creando badge para", userId, courseId);
     const badge = await this.badgesRepo.createBadge(
       userId,
       courseId,
       `${course.title} Completed`,
       'https://cdn-icons-png.flaticon.com/512/190/190411.png',
     );
-
+    console.log("✅ Badge creado:", badge);
     try {
       const user = await this.usersService.getById(userId);
       if (user?.email) {
