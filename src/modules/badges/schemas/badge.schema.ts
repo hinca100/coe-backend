@@ -14,10 +14,10 @@ export class Badge {
   courseId: Types.ObjectId;
 
   @Prop({ required: true })
-  name: string; // Ejemplo: "NestJS Basics Completed"
+  name: string; 
 
   @Prop({ required: true })
-  icon: string; // URL o base64 del icono
+  icon: string; 
 }
 
 export const BadgeSchema = SchemaFactory.createForClass(Badge);

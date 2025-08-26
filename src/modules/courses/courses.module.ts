@@ -13,7 +13,7 @@ import { CloudinaryProvider } from 'src/common/cloudinary/cloudinary.provider';
   imports: [
     MongooseModule.forFeature([
       { name: Course.name, schema: CourseSchema },
-      { name: Chapter.name, schema: ChapterSchema }, // 👈 registra también capítulo
+      { name: Chapter.name, schema: ChapterSchema }, 
       { name: User.name, schema: UserSchema },
     ]),
     MailModule,

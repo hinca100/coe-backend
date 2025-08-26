@@ -11,7 +11,7 @@ export const CloudinaryProvider = {
 
     console.log("🚀 Cloudinary conectado con:", {
       cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-      api_key: process.env.CLOUDINARY_API_KEY?.slice(0, 5) + "****", // Solo log de prueba
+      api_key: process.env.CLOUDINARY_API_KEY?.slice(0, 5) + "****",
     });
 
     return cloudinary;

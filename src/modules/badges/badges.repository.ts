@@ -14,7 +14,7 @@ export class BadgesRepository {
       userId: new Types.ObjectId(userId),
       courseId: new Types.ObjectId(courseId),
       name,
-      icon, // 👈 ahora coincide con el schema
+      icon, 
     });
     return badge.save();
   }

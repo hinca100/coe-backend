@@ -20,13 +20,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: any) {
-    // 👇 buscamos el usuario real en la BD
+    // buscamos el usuario real en la BD
     const user = await this.userModel.findById(payload.sub).select('-password').exec();
 
     if (!user) {
       throw new UnauthorizedException('Usuario no encontrado');
     }
 
-    return user; // 👈 esto se inyecta en request.user
+    return user; 
   }
 }

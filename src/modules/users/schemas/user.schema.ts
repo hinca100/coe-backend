@@ -11,7 +11,7 @@ export enum Role {
 
 @Schema({ timestamps: true })
 export class User {
-  _id: string;  // 👈 añadimos esto para que TS lo reconozca
+  _id: string;  
 
   @Prop({ required: true, unique: true })
   email: string;

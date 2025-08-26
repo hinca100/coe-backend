@@ -13,12 +13,10 @@ export class EnrollmentsController {
     return this.enrollments.enroll(user._id, courseId);
   }
 
-  // 🔹 GET /api/enrollments/my
+ 
   @Get('my')
   async myEnrollments(@CurrentUser() user: any) {
     const enrollments = await this.enrollments.findByUser(user._id);
-
-    // devolvemos directamente los cursos, no el objeto de enrollment
     return enrollments.map((e) => e.courseId);
   }
 }

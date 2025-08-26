@@ -13,7 +13,7 @@ import { User, UserSchema } from './schemas/user.schema';
   providers: [UsersService, UsersRepository],
   exports: [
     UsersService,
-    MongooseModule, // 👈 Exportamos también el MongooseModule para exponer el UserModel
+    MongooseModule, 
   ],
 })
 export class UsersModule {}

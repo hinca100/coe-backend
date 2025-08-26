@@ -8,7 +8,7 @@ import { BadgesModule } from 'src/modules/badges/badges.module';
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Progress.name, schema: ProgressSchema }]),
-    forwardRef(() => BadgesModule), // 👈 esto habilita BadgesService
+    forwardRef(() => BadgesModule),
   ],
   controllers: [ProgressController],
   providers: [ProgressService],

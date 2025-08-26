@@ -12,7 +12,7 @@ export class UsersController {
     return { ok: true };
   }
 
-  // 🔖 Listar todos los usuarios
+  // Listar todos los usuarios
   @UseGuards(JwtAuthGuard)
   @Get()
   async getAllUsers(@CurrentUser() user: any) {
@@ -22,7 +22,7 @@ export class UsersController {
     return this.usersService.getAll();
   }
 
-  // 🔖 Actualizar rol de un usuario
+  // Actualizar rol de un usuario
   @UseGuards(JwtAuthGuard)
   @Patch(':id/role')
   async updateRole(
@@ -59,7 +59,7 @@ export class UsersController {
     return { message: '✅ Usuario actualizado', user };
   }
 
-  // ✅ Eliminar usuario
+  //  Eliminar usuario
   @Delete(':id')
   async deleteUser(@Param('id') id: string) {
     const deleted = await this.usersService.deleteUser(id);

@@ -9,7 +9,7 @@ export class MailController {
   async sendTestMail() {
     return this.mailService.sendCoursePublished(
       { title: 'Prueba de correo', description: 'Esto es un test de Brevo 🚀', category: 'DevOps' },
-      ['tu-correo-real@gmail.com']  // 👈 cámbialo a tu correo real
+      ['tu-correo-real@gmail.com']  // correo real
     );
   }
 }

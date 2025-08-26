@@ -54,7 +54,7 @@ export class CoursesController {
     return this.courses.unpublishCourse(courseId, user);
   }
 
-  // ✅ Agregar capítulo (recibe JSON con resourceUrl)
+  // Agregar capítulo
   @UseGuards(JwtAuthGuard)
   @Post(':id/chapters')
   async addChapter(
@@ -66,7 +66,7 @@ export class CoursesController {
     return this.courses.addChapter(courseId, dto, user);
   }
 
-  // ✅ Agregar recurso (recibe JSON con resourceUrl)
+  // ✅ Agregar recurso
   @UseGuards(JwtAuthGuard)
   @Post(':id/resources')
   async addResource(

@@ -18,15 +18,15 @@ export class ProgressService {
   }
 
   async getCourseProgress(userId: string, courseId: string) {
-    return this.progressModel.find({ 
-      userId, 
-      courseId, 
-      completed: true 
+    return this.progressModel.find({
+      userId,
+      courseId,
+      completed: true
     });
   }
 
   async countCompleted(userId: string, courseId: string) {
     return this.progressModel.countDocuments({ userId, courseId, completed: true });
   }
-  
+
 }
