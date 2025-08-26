@@ -8,6 +8,7 @@ import { ProgressModule } from './modules/progress/dto/progress.module';
 import { BadgesModule } from './modules/badges/badges.module';
 import { StorageModule } from './modules/storage/storage.module';
 import { MailModule } from './modules/mail/mail.module';
+import { EnrollmentsModule } from './modules/enrollments/enrollments.module';
 
 
 
@@ -22,7 +23,8 @@ import { MailModule } from './modules/mail/mail.module';
     ProgressModule,
     BadgesModule,
     StorageModule,
-    MailModule
+    MailModule,
+    EnrollmentsModule
   ],
 })
 export class AppModule {}
