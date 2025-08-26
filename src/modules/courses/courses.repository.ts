@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import {
@@ -51,5 +51,13 @@ export class CoursesRepository {
 
   async findById(courseId: string) {
     return this.courseModel.findById(courseId).populate('chapters').exec();
+  }
+
+  async deleteCourse(courseId: string) {
+    const deleted = await this.courseModel.findByIdAndDelete(courseId).exec();
+    if (!deleted) {
+      throw new NotFoundException(`Curso con id ${courseId} no encontrado`);
+    }
+    return { message: 'Curso eliminado con éxito', course: deleted };
   }
 }

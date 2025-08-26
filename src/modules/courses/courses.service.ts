@@ -154,4 +154,11 @@ export class CoursesService {
     await course.save();
     return { message: '✅ Recurso agregado', resource };
   }
+
+  async deleteCourse(courseId: string, user: User) {
+    if (user.role !== 'admin' && user.role !== 'instructor') {
+      throw new ForbiddenException('No autorizado para eliminar cursos');
+    }
+    return this.repo.deleteCourse(courseId);
+  }
 }

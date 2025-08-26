@@ -10,6 +10,7 @@ import {
   UseInterceptors,
   Query,
   BadRequestException,
+  Delete,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CoursesService } from './courses.service';
@@ -142,4 +143,10 @@ export class CoursesController {
   async testUpload(@UploadedFile() file: Express.Multer.File) {
     return this.courses.testCloudinaryUpload(file);
   }
+
+  @UseGuards(JwtAuthGuard)
+@Delete(':id')
+async deleteCourse(@Param('id') courseId: string, @CurrentUser() user: any) {
+  return this.courses.deleteCourse(courseId, user);
+}
 }
