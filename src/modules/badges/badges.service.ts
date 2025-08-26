@@ -18,25 +18,33 @@ export class BadgesService {
   async checkAndAwardBadge(userId: string, courseId: string) {
     const course = await this.coursesRepo.findById(courseId);
     const progress = await this.progressService.getCourseProgress(userId, courseId);
-    console.log("📊 Capítulos del curso:", course.chapters?.length);
-    console.log("✅ Progreso guardado:", progress.map(p => p.chapterId));
+
     if (!course || !course.chapters?.length) return null;
 
     const totalChapters = course.chapters.length;
     const completedChapters = progress.length;
-    console.log(`🔍 Comparando: completados=${completedChapters}, totales=${totalChapters}`);
+
+    console.log("📊 Capítulos del curso:", totalChapters);
+    console.log("✅ Progreso guardado:", progress.map(p => p.chapterId.toString()));
+    console.log("🔍 Comparando: completados=", completedChapters, "totales=", totalChapters);
+
     if (completedChapters !== totalChapters) return null;
 
     const existing = await this.badgesRepo.findByUserAndCourse(userId, courseId);
     if (existing) return existing;
+
     console.log("🏅 Creando badge para", userId, courseId);
+
+    // 🔥 Ahora usamos "icon" como pide el schema
     const badge = await this.badgesRepo.createBadge(
       userId,
       courseId,
       `${course.title} Completed`,
       'https://cdn-icons-png.flaticon.com/512/190/190411.png',
     );
+
     console.log("✅ Badge creado:", badge);
+
     try {
       const user = await this.usersService.getById(userId);
       if (user?.email) {
@@ -55,7 +63,6 @@ export class BadgesService {
     return badge;
   }
 
-  // 👇 Aquí el método que te falta
   async getUserBadges(userId: string) {
     return this.badgesRepo.getUserBadges(userId);
   }
