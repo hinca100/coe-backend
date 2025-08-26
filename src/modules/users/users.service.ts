@@ -56,4 +56,19 @@ export class UsersService {
     if (!user) throw new NotFoundException('User not found');
     return user;
   }
+
+  async updateUser(
+    id: string,
+    updateDto: { name?: string; email?: string; role?: string },
+  ) {
+    return this.userModel
+      .findByIdAndUpdate(id, updateDto, { new: true })
+      .select('-password')
+      .exec();
+  }
+
+  async deleteUser(id: string) {
+    const result = await this.userModel.findByIdAndDelete(id).exec();
+    return result;
+  }
 }
