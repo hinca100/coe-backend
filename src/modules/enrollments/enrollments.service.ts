@@ -18,6 +18,9 @@ export class EnrollmentsService {
   }
 
   async findByUser(userId: string) {
-    return this.enrollmentModel.find({ userId }).populate('courseId');
+    return this.enrollmentModel
+      .find({ userId })
+      .populate('courseId') // 👈 importante
+      .exec()
   }
 }
