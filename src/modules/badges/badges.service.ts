@@ -18,12 +18,13 @@ export class BadgesService {
   async checkAndAwardBadge(userId: string, courseId: string) {
     const course = await this.coursesRepo.findById(courseId);
     const progress = await this.progressService.getCourseProgress(userId, courseId);
-
+    console.log("📊 Capítulos del curso:", course.chapters?.length);
+    console.log("✅ Progreso guardado:", progress.map(p => p.chapterId));
     if (!course || !course.chapters?.length) return null;
 
     const totalChapters = course.chapters.length;
     const completedChapters = progress.length;
-
+    console.log(`🔍 Comparando: completados=${completedChapters}, totales=${totalChapters}`);
     if (completedChapters !== totalChapters) return null;
 
     const existing = await this.badgesRepo.findByUserAndCourse(userId, courseId);
