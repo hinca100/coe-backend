@@ -35,6 +35,19 @@ Permite a los colaboradores subir, consultar y gestionar capacitaciones, con **i
 
 ---
 
+
+# 📦 Scripts de Base de Datos
+
+Este directorio contiene scripts para inicializar y poblar la base de datos **MongoDB** con datos de prueba para la plataforma CoE.
+
+---
+
+## ⚙️ Requisitos previos
+
+- Tener instalado **Node.js** (v16+ recomendado).
+- Tener configurada una base de datos en **MongoDB Atlas** (o local).
+- Crear un archivo `.env` en la raíz del backend con la variable de conexión:
+
 ## 🔧 Instalación y ejecución local
 
 ```bash
