@@ -10,7 +10,7 @@ export class Chapter extends Document {
   @Prop({ required: true })
   order: number;
 
-  @Prop({ required: true, enum: ['video', 'pdf', 'link'] })
+  @Prop({ required: true, enum: ['video', 'pdf', 'link','image'] })
   resourceType: string;
 
   @Prop({ required: true })
