@@ -29,4 +29,14 @@ export class AuthController {
   refresh(@Headers('x-refresh-token') token: string) {
     return this.auth.refresh(token);
   }
+  @UseGuards(JwtAuthGuard)
+  @Get('profile')
+  async getProfile(@CurrentUser() user: any) {
+    return {
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    };
+}
 }
